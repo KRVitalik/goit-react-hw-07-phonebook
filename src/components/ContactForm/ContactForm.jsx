@@ -3,34 +3,34 @@ import { Button, FormContainer, InputForm, Label } from "./ContactForm.styled";
 
 import { nanoid } from 'nanoid'
 import { useDispatch, useSelector } from "react-redux";
-import { setContacts } from "store/contactSlice";
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { addContact } from "store/contacts/contactsThunk";
 
 const ContactForm = () => {
   const [name, setName] = useState('');
-  const [number, setNumber] = useState('');
+  const [phone, setPhone] = useState('');
 
   const contacts = useSelector(state => state.myContact.contacts)
   const dispatch = useDispatch()
     
   const handleInputChange = e => {
-    e.target.name === "name" ? setName(e.target.value) : setNumber(e.target.value)
+    e.target.name === "name" ? setName(e.target.value) : setPhone(e.target.value)
   };
 
   const handleSubmit = e => {
     e.preventDefault()
-    if (contacts.some((contact) => contact.name.toLowerCase() === name.toLowerCase())) {
-      toast.error(`${name} is already in contact !`, {
-        position: toast.POSITION.TOP_CENTER
-      });
-      return;
-    };
+    // if (contacts.some((contact) => contact.name.toLowerCase() === name.toLowerCase())) {
+    //   toast.error(`${name} is already in contact !`, {
+    //     position: toast.POSITION.TOP_CENTER
+    //   });
+    //   return;
+    // };
 
-    dispatch(setContacts({
-      id: nanoid(),
+    dispatch(addContact({
+      // id: nanoid(),
       name,
-      number,
+      phone,
     }))
 
     toast.success(`You add contact ${name} to your phonebook.`, {

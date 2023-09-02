@@ -1,6 +1,6 @@
 import React from "react";
 import { useDispatch } from "react-redux";
-import { filteredContact } from "store/contactSlice";
+// import { filteredContact } from "store/contactSlice";
 import { InputForm, Label } from "components/ContactForm/ContactForm.styled";
 
 const Filter = () => {
@@ -9,7 +9,7 @@ const Filter = () => {
     return (
         <Label>Find contact by name
             <InputForm
-                onChange={(e)=>dispatch(filteredContact(e.target.value))}
+                // onChange={(e)=>dispatch(filteredContact(e.target.value))}
                 type="text"
                 name="filter"
                 pattern="^[a-zA-Zа-яА-Я]+(([' -][a-zA-Zа-яА-Я ])?[a-zA-Zа-яА-Я]*)*$"

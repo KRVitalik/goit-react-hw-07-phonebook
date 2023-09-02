@@ -1,33 +1,56 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice, isAnyOf } from "@reduxjs/toolkit";
 import { initialState } from "./initialState";
-import storage from 'redux-persist/lib/storage'
-import { persistReducer } from 'redux-persist'
+import { addContact, deleteContact, fetchContacts } from "./contacts/contactsThunk";
+
+const arrThunk = [addContact, deleteContact, fetchContacts];
+
+const thunks = (type) => arrThunk.map(item=>item[type])
+
+const handlePending = (state) => { state.contacts.isLoading = true };
+
+const handleFulfilled = (state) => {
+    state.contacts.isLoading = false
+    state.contacts.error = ''
+}
+
+const handleFulfilledGet = (state, action) => {
+    state.contacts.items = action.payload
+    handleFulfilled(state)
+};
+            
+const handleFulfilledCreate = (state, action) => {
+    state.contacts.items.push(action.payload)
+    handleFulfilled(state)
+};
+            
+const handleFulfilledDelete = (state, action) => {
+    console.log(action.payload)
+    state.contacts.items = state.contacts.items.filter(contact => contact.id !== action.payload.id)
+    handleFulfilled(state)
+};
+
+const handleRejected = (state, action) => {
+    state.contacts.isLoading = false
+    state.contacts.error = action.payload
+};
+
 
 export const contactSlice = createSlice({
     name: "myContact",
     initialState,
-    reducers: {
-        setContacts(state, action) {
-            state.contacts.push(action.payload)
-            state.contacts.sort((firstContact, secondContact) =>
-                firstContact.name.localeCompare(secondContact.name))
-        },
-        deleteContact(state, action) {
-            state.contacts = state.contacts.filter(contact => contact.id !== action.payload)
-        },
-        filteredContact(state, action) {
-            state.filter = action.payload;
-        },
+    extraReducers: (builder) => {
+        builder
+            .addCase(fetchContacts.fulfilled, handleFulfilledGet)
+            .addCase(addContact.fulfilled, handleFulfilledCreate)
+            .addCase(deleteContact.fulfilled, handleFulfilledDelete)
+            .addMatcher(isAnyOf(...thunks('pending')), handlePending)
+            .addMatcher(isAnyOf(...thunks('rejected')), handleRejected)
+        
     }
 });
-
-const persistConfig = {
-    key: 'myContact',
-    storage,
-    blacklist: ['filter'],
-};
-
-export const persistedReducer = persistReducer(persistConfig, contactSlice.reducer)
-
-export const {deleteContact, setContacts, filteredContact} = contactSlice.actions;
 export const contactReducer = contactSlice.reducer;
+    // {
+    //     filteredContact(state, action) {
+    //         state.filter = action.payload;
+    //     },
+    // }
