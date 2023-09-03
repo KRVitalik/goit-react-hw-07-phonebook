@@ -8,16 +8,16 @@ import { deleteContact, fetchContacts } from "store/contacts/contactsThunk";
 const ContactList = () => {
     const contacts = useSelector(state => state.myContact.contacts);
     const filter = useSelector(state => state.myContact.filter);
-    const isLoading = useSelector(state => state.myContact.contacts.isLoading);
     const dispatch = useDispatch();
-
-    console.log(contacts.items)
 
     useEffect(() => {
     dispatch(fetchContacts())
 }, [dispatch])
 
-
+    const data = [...contacts.items]
+    data.sort((firstContact, secondContact) =>
+    firstContact.name.localeCompare(secondContact.name))
+    
     const contactDelete = (id) => {
         dispatch(deleteContact(id))
         toast.warn(`You deleted contact from your phonebook.`, {
@@ -25,9 +25,8 @@ const ContactList = () => {
         });
     };
 
-
     const filteredContacts = () =>
-    contacts.items.filter(contact =>
+    data.filter(contact =>
     contact.name.toLowerCase().includes(filter.toLowerCase())
     );
 

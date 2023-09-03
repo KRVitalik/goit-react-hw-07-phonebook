@@ -24,7 +24,6 @@ const handleFulfilledCreate = (state, action) => {
 };
             
 const handleFulfilledDelete = (state, action) => {
-    console.log(action.payload)
     state.contacts.items = state.contacts.items.filter(contact => contact.id !== action.payload.id)
     handleFulfilled(state)
 };
@@ -34,23 +33,22 @@ const handleRejected = (state, action) => {
     state.contacts.error = action.payload
 };
 
-
 export const contactSlice = createSlice({
     name: "myContact",
     initialState,
     extraReducers: (builder) => {
         builder
-            .addCase(fetchContacts.fulfilled, handleFulfilledGet)
-            .addCase(addContact.fulfilled, handleFulfilledCreate)
-            .addCase(deleteContact.fulfilled, handleFulfilledDelete)
+        .addCase(fetchContacts.fulfilled, handleFulfilledGet)
+        .addCase(addContact.fulfilled, handleFulfilledCreate)
+        .addCase(deleteContact.fulfilled, handleFulfilledDelete)
             .addMatcher(isAnyOf(...thunks('pending')), handlePending)
             .addMatcher(isAnyOf(...thunks('rejected')), handleRejected)
-        
+    },
+    reducers: {
+        filteredContact(state, action) {
+            state.filter = action.payload;
+        },
     }
 });
+export const {filteredContact} = contactSlice.actions;
 export const contactReducer = contactSlice.reducer;
-    // {
-    //     filteredContact(state, action) {
-    //         state.filter = action.payload;
-    //     },
-    // }
